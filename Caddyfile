@@ -1,0 +1,4 @@
+sdsa-owncast.ddns.net {
+    reverse_proxy owncast:8080
+    reverse_proxy owncast:1935
+}

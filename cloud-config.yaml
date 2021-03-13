@@ -1,0 +1,26 @@
+#cloud-config
+users:
+  - name: techbloc
+    ssh-authorized-keys:
+      - ${ssh_key}
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: [sudo, docker]
+    shell: /bin/bash
+write_files:
+  - encoding: b64
+    content: ${caddyfile}
+    path: /home/techbloc/owncast/Caddyfile
+  - encoding: b64
+    content: ${owncast_config}
+    path: /home/techbloc/owncast/config.yaml
+  - encoding: b64
+    content: ${docker_compose}
+    path: /home/techbloc/owncast/docker-compose.yaml
+runcmd:
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i -e '$aAllowUsers techbloc' /etc/ssh/sshd_config
+  - restart ssh
+  - chown -R techbloc:techbloc /home/techbloc
+  - docker pull gabekangas/owncast:latest
+  - docker pull caddy:latest
+  - sudo -H -u techbloc bash -c 'cd /home/techbloc/owncast && docker-compose up'

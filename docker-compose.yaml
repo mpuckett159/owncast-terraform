@@ -1,0 +1,23 @@
+version: '3'
+services:
+  owncast:
+    image: gabekangas/owncast:latest
+    ports:
+      - 8080:8080
+      - 1935:1935
+    volumes:
+      - $PWD/config.yaml:/app/config.yaml
+  caddy:
+    image: caddy:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy_data:/data
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - caddy_config:/config
+volumes:
+  caddy_data:
+  caddy_config:
+  owncast:
