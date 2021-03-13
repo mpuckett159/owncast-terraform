@@ -11,9 +11,9 @@ videoSettings:
   streamQualities:
     - low:
       videoBitrate: 800
-      scaledWidth: 600
       audioPassthrough: true
       encoderPreset: fast
     - medium:
       videoBitrate: 1200
+      audioPassthrough: true
       encoderPreset: fast
