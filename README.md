@@ -1,8 +1,8 @@
 owncast-terraform
 
 Variables to set:
-do_token = bearer token for your DigitalOcean account
-owncast_server_url = the url you're using for the Owncast server
+ * do_token = bearer token for your DigitalOcean account
+ * owncast_server_url = the url you're using for the Owncast server
 
 The owncast_server_url will need to have been registered with whoever your domain registrar is to point to your floating IP that is configured in the do_owncast.tf file. You should also create a floating IP for yourself in DigitalOcean to re-use so you can spin droplets up and down as you need without having to wait for DNS to propogate or anything.
 
