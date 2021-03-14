@@ -13,51 +13,93 @@ variable "do_token" {
     type = string
 }
 
+# Set owncast server URL
+variable "owncast_server_url" {
+    type = string
+}
+
 # Configure the DigitalOcean Provider
 provider "digitalocean" {
-  token = var.do_token
+    token = var.do_token
 }
 
 # Create stream key
 resource "random_string" "stream_key" {
-  length  = 64
-  special = false
-  number  = true
-  lower   = true
-  upper   = true
+    length  = 64
+    special = false
+    number  = true
+    lower   = true
+    upper   = true
+}
+
+# Build config file from variables/inputs/config files
+# I wanted to try and make it simpler to follow/read not sure if I did it.
+locals {
+    ssh_key_local = file(pathexpand("~/.ssh/id_rsa.pub"))
+    caddyfile_local = templatefile(
+        "${path.module}/Caddyfile",
+        {
+            server_url = var.owncast_server_url
+        }
+    )
+    owncast_config_local = templatefile(
+        "${path.module}/owncast-config.yaml",
+        {
+            stream_key = random_string.stream_key.result
+        }
+    )
+    docker_compose_local = file("${path.module}/docker-compose.yaml")
+    user_data_local = templatefile(
+        "${path.module}/cloud-config.yaml",
+        {
+            ssh_key = local.ssh_key_local,
+            caddyfile  = base64encode(local.caddyfile_local),
+            owncast_config = base64encode(local.owncast_config_local),
+            docker_compose = base64encode(local.docker_compose_local)
+        }
+    )
 }
 
 # Create droplet with userdata stored in cloud-config.yaml file
 resource "digitalocean_droplet" "owncast" {
-  name               = "owncast-droplet"
-  size               = "s-1vcpu-1gb"
-  image              = 72401866
-  region             = "sfo3"
-  ipv6               = false
-  private_networking = true
-  user_data          = templatefile(
-      "${path.module}/cloud-config.yaml", 
-      {
-          ssh_key = file(pathexpand("~/.ssh/id_rsa.pub")),
-          caddyfile  = base64encode(file("${path.module}/Caddyfile")),
-          owncast_config = base64encode(templatefile(
-              "${path.module}/owncast-config.yaml",
-              {
-                  stream_key = random_string.stream_key.result
-              }
-          )),
-          docker_compose = base64encode(file("${path.module}/docker-compose.yaml"))
-      }
-    )
+    name               = "owncast-droplet"
+    size               = "c-4"
+    image              = 72401866
+    region             = "sfo3"
+    ipv6               = false
+    private_networking = true
+    user_data          = local.user_data_local
 }
 
 # Assign floating IP to new droplet
 resource "digitalocean_floating_ip_assignment" "pub_ip" {
-  ip_address = "164.90.247.66"
-  droplet_id = digitalocean_droplet.owncast.id
+    ip_address = "164.90.247.66"
+    droplet_id = digitalocean_droplet.owncast.id
 }
 
-# output stream_key to user to send on to whoever
+# # output locals for testing
+# output "ssh_key_local_test" {
+#     value = local.ssh_key_local
+# }
+
+# output "caddyfile_local_test" {
+#     value = local.caddyfile_local
+# }
+
+# output "owncast_config_local_test" {
+#     value = local.owncast_config_local
+# }
+
+# output "docker_compose_local_test" {
+#     value = local.docker_compose_local
+# }
+
+# # output user_data template
+# output "user_data_template" {
+#     value = local.user_data_local
+# }
+
+# output stream_key to user to send on to whoever asked for the server to be set up
 output "stream_key" {
     value = random_string.stream_key.result
 }
