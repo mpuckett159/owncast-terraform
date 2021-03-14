@@ -60,6 +60,11 @@ locals {
     )
 }
 
+# Tag for Droplet so the firewall rules are applied
+resource "digitalocean_tag" "owncast_tag" {
+  name = "owncast"
+}
+
 # Create droplet with userdata stored in cloud-config.yaml file
 resource "digitalocean_droplet" "owncast" {
     name               = "owncast-droplet"
@@ -69,6 +74,7 @@ resource "digitalocean_droplet" "owncast" {
     ipv6               = false
     private_networking = true
     user_data          = local.user_data_local
+    tags               = [digitalocean_tag.owncast_tag.id]
 }
 
 # Assign floating IP to new droplet
