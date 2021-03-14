@@ -10,10 +10,6 @@ videoSettings:
   streamingKey: ${stream_key}
   streamQualities:
     - low:
-      videoBitrate: 800
-      audioPassthrough: true
-      encoderPreset: fast
-    - medium:
-      videoBitrate: 1200
+      videoBitrate: 2400
       audioPassthrough: true
       encoderPreset: fast
