@@ -29,3 +29,9 @@ override.tf.json
 # example: *tfplan*
 
 do_owncast.tfvars
+
+.terraform.lock.hcl
+
+data/owncast.db
+
+data/stats.json

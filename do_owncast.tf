@@ -62,7 +62,7 @@ locals {
 
 # Tag for Droplet so the firewall rules are applied
 resource "digitalocean_tag" "owncast_tag" {
-  name = "owncast"
+  name = "Owncast"
 }
 
 # Create droplet with userdata stored in cloud-config.yaml file
