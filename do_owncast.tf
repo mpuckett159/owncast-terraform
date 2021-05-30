@@ -13,6 +13,16 @@ variable "do_token" {
     type = string
 }
 
+# Set do_spaces_token
+variable "do_spaces_token" {
+    type = string
+}
+
+# Set do_spaces_secret
+variable "do_spaces_secret" {
+    type = string
+}
+
 # Set owncast server URL
 variable "owncast_server_url" {
     type = string
@@ -45,7 +55,9 @@ locals {
     owncast_config_local = templatefile(
         "${path.module}/owncast-config.yaml",
         {
-            stream_key = random_string.stream_key.result
+            stream_key = random_string.stream_key.result,
+            do_spaces_token = var.do_spaces_token,
+            do_spaces_secret = var.do_spaces_secret
         }
     )
     docker_compose_local = file("${path.module}/docker-compose.yaml")
