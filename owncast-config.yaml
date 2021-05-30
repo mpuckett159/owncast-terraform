@@ -15,9 +15,8 @@ videoSettings:
       encoderPreset: fast
 s3:
   enabled: true
-  endpoint: https://sfo3.digitaloceanspaces.com
-  servingEndpoint: https://sfo3.digitaloceanspaces.com
+  endpoint: https://${do_region}.digitaloceanspaces.com
   accessKey: ${do_spaces_token}
   secret: ${do_spaces_secret}
-  region: sfo3
-  bucket: sdsa-owncast-files
+  region: ${do_region}
+  bucket: ${do_bucket_name}
