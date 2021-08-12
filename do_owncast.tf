@@ -1,63 +1,63 @@
 # Set provider requirements
 terraform {
-    required_providers {
-        digitalocean = {
-            source = "digitalocean/digitalocean"
-            version = "~>2.6.0"
-        }
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~>2.6.0"
     }
+  }
 }
 
 # Set do_token
 variable "do_token" {
-    type = string
+  type = string
 }
 
 # Set owncast server URL
 variable "owncast_server_url" {
-    type = string
+  type = string
 }
 
 # Configure the DigitalOcean Provider
 provider "digitalocean" {
-    token = var.do_token
+  token = var.do_token
 }
 
 # Create stream key
 resource "random_string" "stream_key" {
-    length  = 64
-    special = false
-    number  = true
-    lower   = true
-    upper   = true
+  length  = 64
+  special = false
+  number  = true
+  lower   = true
+  upper   = true
 }
 
 # Build config file from variables/inputs/config files
 # I wanted to try and make it simpler to follow/read not sure if I did it.
 locals {
-    ssh_key_local = file(pathexpand("~/.ssh/id_rsa.pub"))
-    caddyfile_local = templatefile(
-        "${path.module}/Caddyfile",
-        {
-            server_url = var.owncast_server_url
-        }
-    )
-    owncast_config_local = templatefile(
-        "${path.module}/owncast-config.yaml",
-        {
-            stream_key = random_string.stream_key.result
-        }
-    )
-    docker_compose_local = file("${path.module}/docker-compose.yaml")
-    user_data_local = templatefile(
-        "${path.module}/cloud-config.yaml",
-        {
-            ssh_key = local.ssh_key_local,
-            caddyfile  = base64encode(local.caddyfile_local),
-            owncast_config = base64encode(local.owncast_config_local),
-            docker_compose = base64encode(local.docker_compose_local)
-        }
-    )
+  ssh_key_local = file(pathexpand("~/.ssh/id_rsa.pub"))
+  caddyfile_local = templatefile(
+    "${path.module}/Caddyfile",
+    {
+      server_url = var.owncast_server_url
+    }
+  )
+  owncast_config_local = templatefile(
+    "${path.module}/owncast-config.yaml",
+    {
+      stream_key = random_string.stream_key.result
+    }
+  )
+  docker_compose_local = file("${path.module}/docker-compose.yaml")
+  user_data_local = templatefile(
+    "${path.module}/cloud-config.yaml",
+    {
+      ssh_key        = local.ssh_key_local,
+      caddyfile      = base64encode(local.caddyfile_local),
+      owncast_config = base64encode(local.owncast_config_local),
+      docker_compose = base64encode(local.docker_compose_local)
+    }
+  )
 }
 
 # Tag for Droplet so the firewall rules are applied
@@ -88,20 +88,20 @@ data "digitalocean_images" "docker" {
 
 # Create droplet with userdata stored in cloud-config.yaml file
 resource "digitalocean_droplet" "owncast" {
-    name               = "owncast-droplet"
-    size               = "c-4"
+  name               = "owncast-droplet"
+  size               = "c-4"
   image              = data.digitalocean_images.docker.id
-    region             = "sfo3"
-    ipv6               = false
-    private_networking = true
-    user_data          = local.user_data_local
-    tags               = [digitalocean_tag.owncast_tag.id]
+  region             = "sfo3"
+  ipv6               = false
+  private_networking = true
+  user_data          = local.user_data_local
+  tags               = [digitalocean_tag.owncast_tag.id]
 }
 
 # Assign floating IP to new droplet
 resource "digitalocean_floating_ip_assignment" "pub_ip" {
-    ip_address = "164.90.247.66"
-    droplet_id = digitalocean_droplet.owncast.id
+  ip_address = "164.90.247.66"
+  droplet_id = digitalocean_droplet.owncast.id
 }
 
 # # output locals for testing
@@ -128,5 +128,5 @@ resource "digitalocean_floating_ip_assignment" "pub_ip" {
 
 # output stream_key to user to send on to whoever asked for the server to be set up
 output "stream_key" {
-    value = random_string.stream_key.result
+  value = random_string.stream_key.result
 }
