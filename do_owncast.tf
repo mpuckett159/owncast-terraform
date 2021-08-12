@@ -65,11 +65,32 @@ resource "digitalocean_tag" "owncast_tag" {
   name = "Owncast"
 }
 
+# Image to use
+data "digitalocean_images" "docker" {
+  filter {
+    key    = "distribution"
+    values = ["Ubuntu"]
+  }
+  filter {
+    key      = "name"
+    values   = ["Docker"]
+    match_by = "substring"
+  }
+  filter {
+    key    = "regions"
+    values = ["sfo1"]
+  }
+  sort {
+    key       = "created"
+    direction = "desc"
+  }
+}
+
 # Create droplet with userdata stored in cloud-config.yaml file
 resource "digitalocean_droplet" "owncast" {
     name               = "owncast-droplet"
     size               = "c-4"
-    image              = 72401866
+  image              = data.digitalocean_images.docker.id
     region             = "sfo3"
     ipv6               = false
     private_networking = true
