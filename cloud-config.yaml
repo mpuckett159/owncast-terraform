@@ -11,9 +11,6 @@ write_files:
     content: ${caddyfile}
     path: /home/techbloc/owncast/Caddyfile
   - encoding: b64
-    content: ${owncast_config}
-    path: /home/techbloc/owncast/config.yaml
-  - encoding: b64
     content: ${docker_compose}
     path: /home/techbloc/owncast/docker-compose.yaml
 runcmd:
@@ -21,6 +18,14 @@ runcmd:
   - sed -i -e '$aAllowUsers techbloc' /etc/ssh/sshd_config
   - restart ssh
   - chown -R techbloc:techbloc /home/techbloc
+  - sudo ufw enable
+  - sudo ufw deny proto tcp from any to any port 80,443,1935
   - docker pull gabekangas/owncast:latest
   - docker pull caddy:latest
-  - sudo -H -u techbloc bash -c 'cd /home/techbloc/owncast && docker-compose up'
+  - sudo -H -u techbloc bash -c 'cd /home/techbloc/owncast && docker-compose up -d'
+  - sleep 15s
+  - [curl, --request, POST, --url, https://${server_url}/api/admin/config/key, 
+    --header, 'Authorization: Basic YWRtaW46YWJjMTIz', 
+    --header, 'Content-Type: application/json', 
+    --data, '{"value": "${stream_key}"}']
+  - sudo ufw allow proto tcp from any to any port 80,443,1935
