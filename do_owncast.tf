@@ -49,8 +49,8 @@ locals {
       ssh_key        = local.ssh_key_local,
       caddyfile      = base64encode(local.caddyfile_local),
       docker_compose = base64encode(local.docker_compose_local),
-      server_url     = var.owncast_server_url
-      stream_key     = random_string.stream_key.result
+      server_url     = var.owncast_server_url,
+      stream_key     = random_string.stream_key.result,
     }
   )
 }
