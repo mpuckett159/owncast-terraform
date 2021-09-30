@@ -1,0 +1,4 @@
+do_token           = "abc123digitaloceantoken"
+owncast_server_url = "owncast.example.com"
+owncast_stream_key = 64
+ssh_key_path       = "~/.ssh/id_rsa.pub"
