@@ -1,10 +1,12 @@
 version: '3'
 services:
   owncast:
-    image: gabekangas/owncast:latest
+    image: gabekangas/owncast:0.0.7
     ports:
       - 8080:8080
       - 1935:1935
+    volumes:
+      - $PWD/config.yaml:/app/config.yaml
   caddy:
     image: caddy:latest
     ports:
