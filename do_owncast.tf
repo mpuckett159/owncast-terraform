@@ -42,12 +42,19 @@ locals {
       server_url = var.owncast_server_url
     }
   )
+  owncast_config_local = templatefile(
+    "${path.module}/owncast-config.yaml",
+    {
+      stream_key = random_string.stream_key.result
+    }
+  )
   docker_compose_local = file("${path.module}/docker-compose.yaml")
   user_data_local = templatefile(
     "${path.module}/cloud-config.yaml",
     {
       ssh_key        = local.ssh_key_local,
       caddyfile      = base64encode(local.caddyfile_local),
+      owncast_config = base64encode(local.owncast_config_local)
       docker_compose = base64encode(local.docker_compose_local),
       server_url     = var.owncast_server_url,
       stream_key     = random_string.stream_key.result,

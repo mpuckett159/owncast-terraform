@@ -1,0 +1,15 @@
+webServerPort: 8080
+rtmpServerPort: 1935
+instanceDetails:
+  name: Movie Night
+  title: Movie Night Server
+  logo: /img/logo.svgn
+  summary: Movie Night
+videoSettings:
+  chunkLengthInSeconds: 4
+  streamingKey: ${stream_key}
+  streamQualities:
+    - low:
+      videoBitRate: 2660
+      audioPassThrough: true
+      encoderPreset: fast
