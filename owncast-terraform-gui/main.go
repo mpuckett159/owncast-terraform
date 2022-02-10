@@ -74,7 +74,7 @@ func RunTerraformApply(outTE *walk.TextEdit) {
 		return
 	}
 
-	outTE.SetText("Stream key: " + string(output["stream_key"].Value))
+	outTE.AppendText("Stream key: " + string(output["stream_key"].Value) + "\n")
 }
 
 func RunTerraformDestroy(outTE *walk.TextEdit) {
@@ -96,5 +96,5 @@ func RunTerraformDestroy(outTE *walk.TextEdit) {
 		return
 	}
 
-	outTE.SetText("Destroy finished")
+	outTE.AppendText("Destroy finished")
 }
