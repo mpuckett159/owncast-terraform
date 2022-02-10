@@ -15,3 +15,17 @@ Not required but I would also recommend setting up a firewall rule for this serv
  * 1935 TCP (RTMP, what OBS streams on)
 
 Then add a tag rule for it, and just make sure the name matches in the Terraform config.
+
+Building GUI:
+You will need to have go installed to build this GUI application.
+
+```bash
+cd ./owncast-terraform-gui
+go build
+```
+
+This builds a simple GUI so you can simply click deploy or destroy and it will run the terraform for you. I haven't figure out how to get it to stop popping up terminal windows yet but I think it's not possible.
+
+The stream key will be output at the end of the run for easy copy/paste into OBS or whatever you're using.
+
+I've only done this on Windows, no idea how this works on Mac.

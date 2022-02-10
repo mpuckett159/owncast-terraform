@@ -37,3 +37,5 @@ data/owncast.db
 data/stats.json
 
 *.tfvars
+
+owncast-terraform-gui/rsrc.syso
